@@ -25,6 +25,7 @@ if [ ! -f "${Lib}" ]; then
 fi
 
 Compiler="clang"
+Zip="zip"
 
 # NOTE: Dirs
 BuildDir="Build"
@@ -35,9 +36,12 @@ Align="%-15s"
 
 printf ${Align} "ExampleMod"
 ExampleModSrc="Code/ExampleMod.c"
-ExampleModTarget="${BuildDir}/ExampleMod.wasm"
+ExampleModManifest="Manifest.txt"
+ExampleModUncompressedTarget="${BuildDir}/ExampleMod.wasm"
+ExampleModCompressedTarget="${BuildDir}/ExampleMod.zip"
 ExampleModFlags="-I${Headers} --target=wasm32 -nostdlib -Wl,--no-entry -Wl,--export-all -Wl,--allow-undefined"
 
-${Compiler} ${ExampleModFlags} ${ExampleModSrc} -Wl,--whole-archive "${Lib}" -Wl,--no-whole-archive -o ${ExampleModTarget}
+${Compiler} ${ExampleModFlags} ${ExampleModSrc} -Wl,--whole-archive "${Lib}" -Wl,--no-whole-archive -o ${ExampleModUncompressedTarget}
+${Zip} -9 ${ExampleModCompressedTarget} ${ExampleModUncompressedTarget} ${ExampleModManifest} >/dev/null
 
 printf "Done\n"
